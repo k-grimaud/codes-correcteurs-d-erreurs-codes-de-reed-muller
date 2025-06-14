@@ -11,7 +11,7 @@
 
     /*
     int* message : message normal
-    int* codeword : message transformé avec la matrice
+    int* codeword : message transforme avec la matrice
 
     int m : numero du plus grand xi
     int lg : nombre de lignes de G
@@ -84,9 +84,9 @@
         void noize(int* msg, int max_noize, int l){
             /** intoduit au maximum max_noize erreurs (aleatoirement)
                 msg : message a modifier
-                max_noize : nombre maximum d'erreurs
+                max_noize : nombre maximum d erreurs
                 l : longeur du message                */
-            int number = rand()%(max_noize + 1); // nombre d'erreurs qu'il y aura : entre 0 et max_noize
+            int number = rand()%(max_noize + 1); // nombre d erreurs qu il y aura : entre 0 et max_noize
             for(int i=0; i<=number; i=i+1){   
                 int k = rand()%(l+1); // on prend un indice au hazard : attention il peut etre choisi plusieures fois
                 modif_msg(msg, k, (msg[k]+1)%2); // on change le bit correspondant
@@ -97,7 +97,7 @@
             /** intrudit des erreurs selon une proba p et max_noize erreurs au max*/
             //proba de changer :
             //int number = rand()%(max_noize + 1);
-            int proba; // si elle est inferieure a p alors l'erreur se produit (on genere un nb entre 0 et 100)
+            int proba; // si elle est inferieure a p alors l erreur se produit (on genere un nb entre 0 et 100)
             int compteur = 0;
 
             for(int i=0 ; i<max_noize; i=i+1){ // au max max_noize erreurs
@@ -115,7 +115,7 @@
 //// CODE REPETITION 3 ////
 
     int** codage_repetition(int* message, int l){
-        // pour chaque bit mon l'envoie 3 fois : tableau qui contient des tableau de long 3 avec le bit repete
+        // pour chaque bit mon l envoie 3 fois : tableau qui contient des tableau de long 3 avec le bit repete
         int** code = malloc(l*sizeof(int*)); 
         for(int i=0; i<l; i=i+1){
             code[i]=malloc(3*sizeof(l));
@@ -224,7 +224,7 @@
 
         int* mult(int* msg1, int* msg2, int* final,int c){
             // calcule la mult de 2 vecteurs  et pas de matrices !
-            // !!! soit on retourne un final que l'on a cree soi on modif celui qui est en parametres et on renvoie void
+            // !!! soit on retourne un final que l on a cree soi on modif celui qui est en parametres et on renvoie void
             for(int i=0; i<c; i=i+1){
                 final[i]= msg1[i]*msg2[i];
             }
@@ -293,7 +293,7 @@
                     reference[i-1]=i;
                 }
 
-            // lignes degré sup a 2
+            // lignes degre sup a 2
                 if(r>=2)
                 {
                     int ind_dern_vect = 1; // donne l indice du dernier vecteur
@@ -334,7 +334,7 @@
         int** multmat(int l1, int c1_l2, int c2, int** mat1, int** mat2){
             // multiplier des matrices;
             int** mat = malloc(l1*sizeof(int*));
-            // AB[i][j] = somme de 0 à c1_l2 des A[i][k]*B[k][j]
+            // AB[i][j] = somme de 0 a c1_l2 des A[i][k]*B[k][j]
             for(int i=0; i<l1; i=i+1)
             {   //les i
                 mat[i]=malloc(c1_l2*sizeof(int));
@@ -452,7 +452,7 @@
 int main(void){
 
     printf("\n");
-    srand(time(NULL));  // pour l'aléatoire
+    srand(time(NULL));  // pour l aleatoire
     int y = 10000;
 
     double* temps_encodage_repetition = malloc(y*sizeof(double));
