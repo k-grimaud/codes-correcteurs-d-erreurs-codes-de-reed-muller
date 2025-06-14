@@ -416,7 +416,7 @@
                         a = k;
                         b = k | puiss; // l autre est celui avec le bit a 1 (indice)
                         sommes[compteur] = (code[a] + code[b]) % 2;
-                        compteur = competur + 1;
+                        compteur = compteur + 1;
                         }
                     }
                     valeurs_coefs[i] = maximum_vraisemblance(sommes, nb_sommes); 
