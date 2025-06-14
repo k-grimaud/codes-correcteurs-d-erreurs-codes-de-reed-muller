@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <time.h>
 
-//////  definitions des objets
+//// definitions des objets ////
 
     typedef int* codeword;
     typedef int* fcodeword;
@@ -16,15 +16,11 @@
     int m : numero du plus grand xi
     int lg : nombre de lignes de G
     int cg : nombre de colones de G
-
-
-
-
     */
 
     int longueur_test;
 
-    ////// foctions pour gerer les messages
+    /// fonctions pour gerer les messages ///
 
         void controler_bit(int bit){
             /** verif bit = 0 ou 1 */
@@ -36,31 +32,30 @@
         }
 
         int* cree_msg(int l){
-            /** cree un msg de long <max_puiss> (pointeur sur int) */
+            /** cree un msg de long l (pointeur sur int) */
             int* msg = malloc((l)*sizeof(int));
             return msg;
         }
-    //
 
-        void modif_msg(int* msg, int l, int p, int bit){
+        void modif_msg(int* msg, int p, int bit){
             /** modifie le bit de puissance p en bit dans msg */ 
             controler_bit(bit);
             msg[p] = bit;
         }
 
-        void inserer_msg( int* msg, int l){
-            /* insere le msg scanne a l adresse donnee l ecrase ce qu il y avait avant */
+        void inserer_msg( int* msg, int l){ // pas uttilise dans les tests finaux
+            /* insere le msg scanne a l adresse donnee et ecrase ce qu il y avait avant */
+            /* message de long l*/
             int bit;
-            printf("inserer msg de %d bits :\n",l+1);
-            for(int i=0 ; i<=l; i=i+1){
+            printf("inserer msg de %d bits :\n",l);
+            for(int i=0 ; i<l; i=i+1){
                 printf("%d : ",i);
                 scanf("%d",&bit);
                 controler_bit(bit);
-                msg[l - i] = bit;
+                msg[i] = bit;
             }
-            
         }
-    //
+    
         void lire_msg( int* msg, int l){
             printf(" :: ");
             for(int i=0; i< l ; i=i+1){
@@ -68,62 +63,63 @@
             }
             printf("\n");
         }
-    //
-        int trouver_bit(int* msg, int puiss, int l){
+    
+        int trouver_bit(int* msg, int puiss, int l){ //utile ?
             return msg[l - puiss];
         }
-    //
+    ///
+
+    /// aleatoire ///
+
         int* random_msg(int l){
             int* msg = malloc(l*sizeof(int));
             int a;
-
-            for(int i=0; i< l; i=i+1){
-                a=(rand()+i)%2;
-                modif_msg(msg,l, i, a);
+            for(int i=0; i< l; i=i+1){ // pour toutes les cases du message
+                a=(rand()+i)%2; // bit aleatoire : 0 ou 1 -> enlever le i
+                modif_msg(msg, i, a); 
             }
-            
             return msg;
         }
 
         void noize(int* msg, int max_noize, int l){
-            int number = rand()%(max_noize + 1);
-            for(int i=0; i<=number; i=i+1){
-                
-                int k = rand()%(l+1);
-                modif_msg(msg,l,k, (msg[k]+1)%2);
-                
+            /** intoduit au maximum max_noize erreurs (aleatoirement)
+                msg : message a modifier
+                max_noize : nombre maximum d'erreurs
+                l : longeur du message                */
+            int number = rand()%(max_noize + 1); // nombre d'erreurs qu'il y aura : entre 0 et max_noize
+            for(int i=0; i<=number; i=i+1){   
+                int k = rand()%(l+1); // on prend un indice au hazard : attention il peut etre choisi plusieures fois
+                modif_msg(msg, k, (msg[k]+1)%2); // on change le bit correspondant
             }
         }
 
         void randp_noize(int* msg, int max_noize, int p, int l){
+            /** intrudit des erreurs selon une proba p et max_noize erreurs au max*/
             //proba de changer :
             //int number = rand()%(max_noize + 1);
-            int proba;
+            int proba; // si elle est inferieure a p alors l'erreur se produit (on genere un nb entre 0 et 100)
             int compteur = 0;
 
-            for(int i=0 ; i<max_noize; i=i+1){
-                proba = rand()%(100+1) ;
-                int k = rand()%(l);  // entre 0 et l-1
-                //pourrait changer plusieurs fois le meme 
-                //bit possible probleme avc p
+            for(int i=0 ; i<max_noize; i=i+1){ // au max max_noize erreurs
+                proba = rand()%(100+1) ; // nb entre 0 et 100
+                int k = rand()%(l);  // indice entre 0 et l-1
+                //pourrait changer plusieurs fois le meme bit
                 if(proba<=p ){
-                    modif_msg(msg,l, k, (msg[i]+1)%2);
-                    compteur = compteur+1;
+                    modif_msg(msg, k, (msg[i]+1)%2);
+                    compteur = compteur+1; // nb d erreurs
                 }
             }
         }
+    ///
 
-//
-
-////// codes simples : repetition ex 3
+//// CODE REPETITION 3 ////
 
     int** codage_repetition(int* message, int l){
-
-        int** code = malloc(l*sizeof(int*));
+        // pour chaque bit mon l'envoie 3 fois : tableau qui contient des tableau de long 3 avec le bit repete
+        int** code = malloc(l*sizeof(int*)); 
         for(int i=0; i<l; i=i+1){
             code[i]=malloc(3*sizeof(l));
         }
-
         for(int i=0; i<l; i=i+1){
             for(int j=0; j<3; j=j+1){
                 code[i][j]=message[i];
@@ -131,43 +127,37 @@
         }
         return code;
     }
-
+    
     int majorite(int a, int b, int c){
+        // donne le bit majoritaire
         int count=0;
-        if(a==0){
-            count = count+1;
-        }
-        if(b==0){
-            count = count +1;
-        }
-        if(c==0){
-            count = count +1;
-        }
+        if(a==0){    count = count+1;}
+        if(b==0){    count = count+1;}
+        if(c==0){    count = count+1;}
         if(count>=2){
             return 0;
         }else{
             return 1;
         }
     }
-
+    
     int* decodage_repetition(int** code_r, int l){
-
+    
         int* message = malloc(l*sizeof(int));
-        int i=0;
-        int j=0;
-
+    
         for(int i=0; i<l; i=i+1){
             message[i]= majorite(code_r[i][0], code_r[i][1], code_r[i][2]);
         }
         return message;
     }
-//
+////
 
-////// reed muller 
+//// REED MULLER ////
 
-    // outils :
+    /// outils :
 
         int puiss2(int n){
+            // retourne 2 puiss n (on peut aussi le faire en malipulant les bits c plus efficace
             if(n==0){ 
                 return 1;
             }else{
@@ -180,6 +170,7 @@
         }
 
         int factorielle(int a){
+            //retourne a!
             int fact=1;
             for(int i=1; i<=a; i=i+1){
                 fact = fact*i;
@@ -188,13 +179,15 @@
         }
 
         int calcul_nb_ligne(int r, int m){ // nb de lignes
-            /**  somme des (k parmi m) vecteurs possibles de degre k (r=0->k)*/
+            /**  nb de lignes de la matrice : somme des (k parmi m) vecteurs possibles de degre k (r=0->k)*/
             int s=0;
             for(int k=0; k<=r; k=k+1){
                 s = s + (factorielle(m)/(factorielle(m-k)*factorielle(k))) ;
+                // peut etre ameliorable avec le triangle de pascal ou la formule sans nom ? a voir mais peu probablef    
             }
             return s;
         }
+
         /*
         int* add(int* msg1, int* msg2){
             /** calcule addition de 2 vecteurs 
@@ -230,7 +223,8 @@
         */
 
         int* mult(int* msg1, int* msg2, int* final,int c){
-            //** calcule la mult de 2 vecteurs 
+            // calcule la mult de 2 vecteurs  et pas de matrices !
+            // !!! soit on retourne un final que l'on a cree soi on modif celui qui est en parametres et on renvoie void
             for(int i=0; i<c; i=i+1){
                 final[i]= msg1[i]*msg2[i];
             }
@@ -238,7 +232,7 @@
         }
 
         void phi_xi(int i, int m, int* result){
-            /** donne les xi (i=0 -> m-1) */
+            /** donne les xi (i=1 -> m) mais indexes 0 -> m-1*/
             int bit=0;
             int puiss = puiss2(m-(i+1));
             int j=0;
@@ -263,7 +257,12 @@
             }
         }
 
+    ///
+
+    /// FONCTIONS PRINCIPALES ///
+
         int** mat(int r, int m){
+            /* on commence par les degres les plus petits degres */
             int l=calcul_nb_ligne(r,m); // hauteur / nb vecteurs de la mat
             int c = puiss2(m); // largeur / longueur des vecteurs
 
@@ -305,20 +304,21 @@
                     {
                         matrice[i]= malloc(c*sizeof(int)); //lignes de la matrice
                         if (matrice[i] == NULL) 
-                        { printf("erreur ligne mat mult"); }
+                        { 
+                            printf("erreur ligne mat mult"); 
+                        }
                     
                         mult(matrice[ind_dern_vect],matrice[j], matrice[i],c); 
-                        // matrice[ind_dern_vect] = vecteur de degre k-1
-                        // matrice[j] = vecteur de degre 1
-                        // matrice[i] = emplacement ou mettre le resultat
-
+                            // matrice[ind_dern_vect] -> vecteur de degre k-1
+                            // matrice[j] -> vecteur de degre 1
+                            // matrice[i] -> emplacement ou mettre le resultat
                         reference[i-1]=j;
 
                         if(j == m)
                         { 
                             // quand on arrive sur une fin et que l on doit changer de vect de reference
                             j=reference[ind_dern_vect]+1;
-                            ind_dern_vect = ind_dern_vect + 1; 
+                            ind_dern_vect = ind_dern_vect+1; 
                         }
                         else
                         {
@@ -328,11 +328,11 @@
                 }
                 free(reference);
             }
-            
             return matrice;
         }
 
         int** multmat(int l1, int c1_l2, int c2, int** mat1, int** mat2){
+            // multiplier des matrices;
             int** mat = malloc(l1*sizeof(int*));
             // AB[i][j] = somme de 0 à c1_l2 des A[i][k]*B[k][j]
             for(int i=0; i<l1; i=i+1)
@@ -348,23 +348,24 @@
             }
             return mat;
         }
-    //
+    ///
 
-    //codage
+    /// codage ///
 
         int* generer_mot_de_code(int* message, int** mat, int c, int m){ 
             // c est 2 puiss m : le nb de valuations possibles de x1...xm
             // on remarque que les colones de la matrice de degre 1 sont toutes les evaluations possibles
             //il suffit de multiplier les ai avec le bon coeff et de faire la somme.
-
             int* mot_de_code = malloc(c*sizeof(int));
-
-            for(int i=0; i<c; i=i+1){
+            for(int i=0; i<c; i=i+1)
+            {
                 mot_de_code[i]=0;
             }
 
-            for(int col = 0; col<c; col=col+1){ // pour chaque colone (valuation de x1...xm)
-                for(int ligne=0; ligne<=m; ligne=ligne+1){ 
+            for(int col = 0; col<c; col=col+1)
+            { // pour chaque colone (valuation de x1...xm)
+                for(int ligne=0; ligne<=m; ligne=ligne+1)
+                { 
                     //on multiplie la ligne i-1(car on a commence a 0 et pas a 1) avec ai et on somme
                     mot_de_code[col]=(mot_de_code[col]+ message[ligne]*mat[ligne][col]);
                 }    
@@ -372,18 +373,21 @@
             }
             return mot_de_code;
         }
-    //
+    ///
 
-    //decodage
+    /// decodage ///
 
         int maximum_vraisemblance(int* valeurs, int l){
             int count =0;
-            for(int i=0; i<l; i=i+1){
-                if(valeurs[i]==0){
+            for(int i=0; i<l; i=i+1)
+            {
+                if(valeurs[i]==0)
+                {
                     count=count+1;
                 }
             }
-            if(count >= l/2){
+            if(count >= l/2)
+            {
                 return 0;
             }else{
                 return 1;
@@ -399,72 +403,51 @@
             for(int i=0; i<=m; i=i+1){ // init coeffs a 0
                 valeurs_coefs[i]=0;
             }
-
             int nb_sommes = puiss2(m-1);
-
             int* sommes = malloc( nb_sommes*sizeof(int));  /// il y a trop de pointeurs
-        
-
             int a; int b;
             int compteur;
             int puiss ;
-    
-                for(int i = 1; i <= m; i = i + 1){ 
-
-                    compteur = 0; 
-                    puiss = puiss2(m-i);
-
-                    for(int k_idx = 0; k_idx < c; k_idx = k_idx + 1){
-                        if ((k_idx & puiss) == 0) { // Select pairs where the 'delta' bit is 0
-                            a = k_idx;
-                            b = k_idx | puiss; // The other index in the pair
-
-                            sommes[compteur] = (code[a] + code[b]) % 2;
-                            compteur++;
+            for(int i = 1; i <= m; i = i + 1){ 
+                compteur = 0; 
+                puiss = puiss2(m-i);
+                for(int k = 0; k < c; k = k + 1){
+                    if ((k & puiss) == 0) { // choisir les paires ou le bit est a 0
+                        a = k;
+                        b = k | puiss; // l autre est celui avec le bit a 1 (indice)
+                        sommes[compteur] = (code[a] + code[b]) % 2;
+                        compteur = competur + 1;
                         }
                     }
-
                     valeurs_coefs[i] = maximum_vraisemblance(sommes, nb_sommes); 
                 }
-
-            //
-            
             free(sommes);
 
             // pour a0
             int* mot_sans_a0 = malloc(c*sizeof(int));
-
-            for(int i=0; i<c; i=i+1){
+            for(int i=0; i<c; i=i+1)
+            {
                 mot_sans_a0[i]=0;       // init a 0
             }
-
-            for(int ligne=1; ligne<=m; ligne=ligne+1){
-                for(int col=0; col<c; col=col+1){
+            for(int ligne=1; ligne<=m; ligne=ligne+1)
+            {
+                for(int col=0; col<c; col=col+1)
+                {
                     mot_sans_a0[col]=mot_sans_a0[col]+valeurs_coefs[ligne]*matrice[ligne][col];
                 }
             }
-            
-
             for(int i=0; i<c; i=i+1){
                 code[i]= (code[i] + mot_sans_a0[i])%2; //// on a change le code recu maintenant il contient des valeurs probable de a0
             }
 
             valeurs_coefs[0] = maximum_vraisemblance(code,c);
             free(mot_sans_a0);
-
             return valeurs_coefs;
-
         }
-    //
-//
+    ///
+////
 
-
-
-
-
-
-
-
+//// MAIN ////
 
 int main(void){
 
